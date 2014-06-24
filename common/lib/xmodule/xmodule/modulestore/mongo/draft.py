@@ -291,7 +291,6 @@ class DraftModuleStore(MongoModuleStore):
             Convert the subtree
             """
             # convert the children first
-            # NAATODO - why not just call get_children here like in the publish method?
             for child in item.get('definition', {}).get('children', []):
                 child_loc = Location.from_deprecated_string(child)
                 child_entry = self.collection.find_one({'_id': child_loc.to_deprecated_son()})
@@ -503,20 +502,23 @@ class DraftModuleStore(MongoModuleStore):
             except ItemNotFoundError:
                 original_published = None
 
+            # if the category of this item allows having children
             if item.has_children:
                 if original_published is not None:
                     # see if previously published children were deleted. 2 reasons for children lists to differ:
-                    #   1) child deleted
-                    #   2) child moved
-                    for child in original_published.children:
-                        if child not in item.children:
-                            # did child move?
-                            parent = self.get_parent_location(child)
-                            if parent == item_location:
-                                # deleted from draft; so, delete published now that we're publishing
+                    #   Case 1: child deleted
+                    #   Case 2: child moved
+                    for orig_child in original_published.children:
+                        if orig_child not in item.children:
+                            published_parent = self.get_parent_location(orig_child)
+                            if published_parent == item_location:
+                                # Case 1: child was deleted in draft parent item
+                                # So, delete published version of the child now that we're publishing the draft parent
                                 self._delete_subtree(item_location, [as_published])
-            # NAATODO - what about the Else case here where the DRAFT item does not have children, but the
-            # original_published version has children?
+                            else:
+                                # Case 2: child was moved to a new draft parent item
+                                # So, do not delete the child.  It will be published when the new parent is published.
+                                pass
 
             super(DraftModuleStore, self).update_item(item, user_id, isPublish=True)
             self.collection.remove({'_id': as_draft(item_location).to_deprecated_son()})

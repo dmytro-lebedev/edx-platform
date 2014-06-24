@@ -80,7 +80,7 @@ update_module_store_settings(
     doc_store_settings={
         'db': 'test_xmodule',
         'collection': 'test_modulestore{0}'.format(uuid4().hex[:5]),
-    }
+    },
 )
 
 CONTENTSTORE = {

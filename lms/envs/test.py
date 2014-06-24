@@ -16,6 +16,7 @@ from .common import *
 import os
 from path import path
 from warnings import filterwarnings
+from uuid import uuid4
 
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000-9000'
 
@@ -116,7 +117,11 @@ update_module_store_settings(
     },
     xml_store_options={
         'data_dir': COMMON_TEST_DATA_ROOT,
-    }
+    },
+    doc_store_settings={
+        'db': 'test_xmodule',
+        'collection': 'test_modulestore{0}'.format(uuid4().hex[:5]),
+    },
 )
 
 CONTENTSTORE = {
@@ -125,12 +130,6 @@ CONTENTSTORE = {
         'host': 'localhost',
         'db': 'xcontent',
     }
-}
-
-DOC_STORE_CONFIG = {
-    'host': 'localhost',
-    'db': 'test_xmodule',
-    'collection': 'test_modulestore',
 }
 
 DATABASES = {

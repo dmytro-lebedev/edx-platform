@@ -993,8 +993,7 @@ class MongoModuleStore(ModuleStoreWriteBase):
 
     def get_parent_location(self, location, revision=PUBLISHED, **kwargs):
         '''
-        Find the location that is the parent of this location in this
-        course.  Needed for path_to_location().
+        Find the location that is the parent of this location in this course.
 
         Returns: version agnostic location (revision always None) as per the rest of mongo.
 
