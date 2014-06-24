@@ -52,7 +52,7 @@ def get_video_from_cdn(cdn_base_url, original_video_url):
     alternative links.
     """
 
-    if request_url is None:
+    if cdn_base_url is None:
         return None
 
     request_url = cdn_base_url + urllib.quote(original_video_url)

@@ -38,16 +38,16 @@ class CountryMiddlewareTests(TestCase):
         Gives us a fake set of IPs
         """
         ip_dict = {
-            '1.0.1.0': 'CN',
-            '1.0.1.255': 'CN',
+            '117.79.83.1': 'CN',
+            '117.79.83.100': 'CN',
             '4.0.0.0': 'SD',
         }
         return ip_dict.get(ip_addr, 'US')
 
     def test_country_code_added(self):
         request = self.request_factory.get('/somewhere',
-                                            HTTP_X_FORWARDED_FOR='1.0.1.0',
-                                            REMOTE_ADDR='1.0.1.0')
+                                            HTTP_X_FORWARDED_FOR='117.79.83.1',
+                                            REMOTE_ADDR='117.79.83.1')
         request.user = self.authenticated_user
         self.session_middleware.process_request(request)
         # No country code exists before request.
@@ -56,7 +56,7 @@ class CountryMiddlewareTests(TestCase):
         self.country_middleware.process_request(request)
         # Country code added to session.
         self.assertEqual('CN', request.session.get('country_code'))
-        self.assertEqual('1.0.1.0', request.session.get('ip_address'))
+        self.assertEqual('117.79.83.1', request.session.get('ip_address'))
 
     def test_ip_address_changed(self):
         request = self.request_factory.get('/somewhere',
@@ -65,7 +65,7 @@ class CountryMiddlewareTests(TestCase):
         request.user = self.anonymous_user
         self.session_middleware.process_request(request)
         request.session['country_code'] = 'CN'
-        request.session['ip_address'] = '1.0.1.0'
+        request.session['ip_address'] = '117.79.83.1'
         self.country_middleware.process_request(request)
         # Country code is changed.
         self.assertEqual('SD', request.session.get('country_code'))
@@ -73,26 +73,26 @@ class CountryMiddlewareTests(TestCase):
 
     def test_ip_address_is_not_changed(self):
         request = self.request_factory.get('/somewhere',
-                                            HTTP_X_FORWARDED_FOR='1.0.1.0',
-                                            REMOTE_ADDR='1.0.1.0')
+                                            HTTP_X_FORWARDED_FOR='117.79.83.1',
+                                            REMOTE_ADDR='117.79.83.1')
         request.user = self.anonymous_user
         self.session_middleware.process_request(request)
         request.session['country_code'] = 'CN'
-        request.session['ip_address'] = '1.0.1.0'
+        request.session['ip_address'] = '117.79.83.1'
         self.country_middleware.process_request(request)
         # Country code is not changed.
         self.assertEqual('CN', request.session.get('country_code'))
-        self.assertEqual('1.0.1.0', request.session.get('ip_address'))
+        self.assertEqual('117.79.83.1', request.session.get('ip_address'))
 
     def test_same_country_different_ip(self):
         request = self.request_factory.get('/somewhere',
-                                            HTTP_X_FORWARDED_FOR='1.0.1.255',
-                                            REMOTE_ADDR='1.0.1.255')
+                                            HTTP_X_FORWARDED_FOR='117.79.83.100',
+                                            REMOTE_ADDR='117.79.83.100')
         request.user = self.anonymous_user
         self.session_middleware.process_request(request)
         request.session['country_code'] = 'CN'
-        request.session['ip_address'] = '1.0.1.0'
+        request.session['ip_address'] = '117.79.83.1'
         self.country_middleware.process_request(request)
         # Country code is not changed.
         self.assertEqual('CN', request.session.get('country_code'))
-        self.assertEqual('1.0.1.255', request.session.get('ip_address'))
+        self.assertEqual('117.79.83.100', request.session.get('ip_address'))
