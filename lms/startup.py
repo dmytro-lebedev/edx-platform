@@ -10,6 +10,7 @@ settings.INSTALLED_APPS  # pylint: disable=W0104
 from django_startup import autostartup
 import edxmako
 import logging
+import sys
 
 log = logging.getLogger(__name__)
 
@@ -59,6 +60,9 @@ def enable_theme():
     settings.STATICFILES_DIRS.append(
         (u'themes/{}'.format(settings.THEME_NAME), theme_root / 'static')
     )
+    
+    # Allow theme to contain additional Django applications
+    sys.path.append(theme_root / 'djangoapps')
 
 
 def enable_microsites():
