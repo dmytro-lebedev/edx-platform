@@ -306,7 +306,7 @@ def import_from_xml(
                 course_key,
                 dest_course_id,
                 do_import_static=do_import_static,
-                system=course.runtime
+                runtime=course.runtime
             )
 
         # finally, publish the course
@@ -329,7 +329,7 @@ def import_from_xml(
 def _import_module_and_update_references(
         module, store, user_id,
         source_course_id, dest_course_id,
-        do_import_static=True, system=None):
+        do_import_static=True, runtime=None):
 
     logging.debug(u'processing import of module {}...'.format(module.location.to_deprecated_string()))
 
@@ -534,7 +534,8 @@ def _import_course_draft(
                         _import_module_and_update_references(
                             module, store, user_id,
                             source_course_id,
-                            target_course_id, system=mongo_runtime
+                            target_course_id,
+                            runtime=mongo_runtime,
                         )
                         for child in module.get_children():
                             _import_module(child)

@@ -74,7 +74,7 @@ class TestPublish(SplitWMongoCourseBoostrapper):
 
         # delete the draft version of the discussion
         location = self.old_course_key.make_usage_key('discussion', name='Discussion1')
-        self.draft_mongo.delete_item(location, None)
+        self.draft_mongo.delete_item(location, self.userid)
 
         draft_vert = self.draft_mongo.get_item(draft_vert.location, 0)
         # remove pointer from draft vertical (still there b/c not refetching vert)
